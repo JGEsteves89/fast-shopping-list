@@ -1,0 +1,10 @@
+.achievement-card {
+	max-width: 30rem;
+	min-height: 10rem;
+	margin: 1rem;
+	padding: 1rem;
+	background-repeat: no-repeat;
+	background-position: top;
+	box-shadow: 3px 5px 15px -7px rgba(0, 0, 0, 0.75) !important;
+	border: 0.01em solid rgba(255, 255, 255, 0.062);
+}
