@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -10,7 +11,9 @@ import { useTheme } from '@mui/material/styles';
 import './shoppingItem.css';
 
 function ShoppingItem(props) {
-	const item = props.item;
+	const emitOnChange = props.onChange;
+	const [item, setItem] = useState(props.item);
+
 	const theme = useTheme();
 	const taskIcon = (bought) => {
 		return bought ? <TaskAltSharpIcon /> : <PanoramaFishEyeSharpIcon />;
@@ -18,9 +21,16 @@ function ShoppingItem(props) {
 	const getClass = (className) => {
 		return item.bought ? className + ' ' + className + '-bought' : className;
 	};
+	const toggleItemBought = () => {
+		const cpyItem = { ...item };
+		cpyItem.bought = !cpyItem.bought;
+		setItem(cpyItem);
+		emitOnChange(cpyItem);
+	};
+
 	return (
 		<Card className={getClass('item-card')} sx={{ backgroundColor: 'background.paper' }}>
-			<IconButton aria-label="bought" sx={{ color: theme.palette.text.primary, mr: 1 }}>
+			<IconButton onClick={toggleItemBought} aria-label="bought" sx={{ color: theme.palette.text.primary, mr: 1 }}>
 				{taskIcon(item.bought)}
 			</IconButton>
 			<Box>
