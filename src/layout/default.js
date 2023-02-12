@@ -31,7 +31,9 @@ function DefaultLayout() {
 					</Grid>
 				</Toolbar>
 			</AppBar>
-			<ShoppingList />
+			<Box className="app-content">
+				<ShoppingList />
+			</Box>
 		</Box>
 	);
 }
