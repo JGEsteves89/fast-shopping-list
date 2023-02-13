@@ -21,11 +21,15 @@ function ShoppingList() {
 		cpyList = cpyList.sort(defaultSorter);
 		setShippingListItems(cpyList);
 	};
-
+	const onItemDelete = (item) => {
+		console.log('The item', item.name, 'was deleted');
+		let cpyList = [...shoppingListItems];
+		setShippingListItems(cpyList.filter((i) => i.id !== item.id).sort(defaultSorter));
+	};
 	return (
 		<Box className="shopping-list-container">
 			{shoppingListItems.map((item) => (
-				<ShoppingItem key={item.id} onChange={onItemChange} item={{ ...item }} />
+				<ShoppingItem key={item.id} onChange={onItemChange} onItemDelete={onItemDelete} item={{ ...item }} />
 			))}
 		</Box>
 	);

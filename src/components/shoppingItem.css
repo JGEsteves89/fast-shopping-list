@@ -15,3 +15,13 @@
 .item-card-bought {
 	filter: brightness(75%);
 }
+.MuiMenu-list {
+	display: flex;
+	flex-direction: row;
+}
+.MuiMenuItem-root {
+	padding-inline: 0.6rem !important;
+}
+#basic-menu {
+	transform: translate(20px, 23px);
+}

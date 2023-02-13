@@ -6,15 +6,33 @@ import Typography from '@mui/material/Typography';
 import TaskAltSharpIcon from '@mui/icons-material/TaskAltSharp';
 import PanoramaFishEyeSharpIcon from '@mui/icons-material/PanoramaFishEyeSharp';
 import MenuIcon from '@mui/icons-material/Menu';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Grow from '@mui/material/Grow';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useTheme } from '@mui/material/styles';
 
 import './shoppingItem.css';
 
 function ShoppingItem(props) {
 	const emitOnChange = props.onChange;
+	const emitOnItemDelete = props.onItemDelete;
+	const [menuAnchor, setMenuAnchor] = useState(null);
 	const [item, setItem] = useState(props.item);
 
 	const theme = useTheme();
+
+	const open = Boolean(menuAnchor);
+	const handleMenuClick = (event) => {
+		setMenuAnchor(event.currentTarget);
+	};
+	const handleClose = () => {
+		setMenuAnchor(null);
+	};
+
 	const taskIcon = (bought) => {
 		return bought ? <TaskAltSharpIcon /> : <PanoramaFishEyeSharpIcon />;
 	};
@@ -27,7 +45,19 @@ function ShoppingItem(props) {
 		setItem(cpyItem);
 		emitOnChange(cpyItem);
 	};
-
+	const deleteItem = () => {
+		emitOnItemDelete(item);
+		handleClose();
+	};
+	const addQuantity = (qty) => {
+		console.log(item.name, qty);
+		const cpyItem = { ...item };
+		if (cpyItem.qty + qty !== 0) {
+			cpyItem.qty += qty;
+			setItem(cpyItem);
+			emitOnChange(cpyItem);
+		}
+	};
 	return (
 		<Card className={getClass('item-card')} sx={{ backgroundColor: 'background.paper' }}>
 			<IconButton onClick={toggleItemBought} aria-label="bought" sx={{ color: theme.palette.text.primary, mr: 1 }}>
@@ -41,9 +71,44 @@ function ShoppingItem(props) {
 					</Typography>
 				)}
 			</Box>
-			<IconButton size="large" edge="start" aria-label="menu" color="secondary" sx={{ mr: 2 }}>
+
+			<IconButton onClick={handleMenuClick} size="large" edge="end" aria-label="menu" color="secondary" sx={{ mr: 2 }}>
 				<MenuIcon />
 			</IconButton>
+			<Menu
+				id="basic-menu"
+				anchorEl={menuAnchor}
+				open={open}
+				TransitionComponent={Grow}
+				TransitionProps={{
+					direction: 'left',
+					timeout: 500,
+					easing: {
+						enter: 'cubic-bezier(1,0,.7,.81)',
+						exit: 'cubic-bezier(1,0,.7,.81)',
+					},
+				}}
+				anchorOrigin={{
+					vertical: 'top',
+					horizontal: 'right',
+				}}
+				transformOrigin={{
+					vertical: 'center',
+					horizontal: 'right',
+				}}>
+				<MenuItem onClick={() => addQuantity(1)}>
+					<AddIcon fontSize="small" />
+				</MenuItem>
+				<MenuItem onClick={() => addQuantity(-1)}>
+					<RemoveIcon fontSize="small" />
+				</MenuItem>
+				<MenuItem onClick={deleteItem}>
+					<DeleteOutlineIcon fontSize="small" />
+				</MenuItem>
+				<MenuItem onClick={handleClose}>
+					<ArrowForwardIcon fontSize="small" />
+				</MenuItem>
+			</Menu>
 		</Card>
 	);
 }
