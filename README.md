@@ -11,7 +11,7 @@
 -   [x] -   Increase quantity of shopping item
 -   [x] -   Remove shopping item
 -   [x] -   Add shopping item and quantity view
--   [ ] -   Edit shopping item (reuse add shopping view)
+-   [x] -   Edit shopping item (reuse add shopping view)
 -   [ ] -   Design structure data to retrieve information from the server
 -   [ ] -   Design CRUD server action for shopping item
 -   [ ] -   Add shopping history
@@ -22,3 +22,4 @@
 -   [ ] -   Modify add and shopping history to effect on trend view
 -   [ ] -   Shopping trend view
 -   [ ] -   Shopping settings
+-   [ ] -   Allow to add several items like: cheese ham potatoes

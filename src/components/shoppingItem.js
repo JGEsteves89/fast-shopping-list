@@ -1,18 +1,15 @@
 import { useEffect, useState } from 'react';
-import Card from '@mui/material/Card';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import TaskAltSharpIcon from '@mui/icons-material/TaskAltSharp';
-import PanoramaFishEyeSharpIcon from '@mui/icons-material/PanoramaFishEyeSharp';
-import MenuIcon from '@mui/icons-material/Menu';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Grow from '@mui/material/Grow';
+
+import { IconButton, Typography, Menu, MenuItem, Grow, Box, Card, Input } from '@mui/material';
+
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import TaskAltSharpIcon from '@mui/icons-material/TaskAltSharp';
+import PanoramaFishEyeSharpIcon from '@mui/icons-material/PanoramaFishEyeSharp';
+
+import MenuIcon from '@mui/icons-material/Menu';
 import { useTheme } from '@mui/material/styles';
 
 import useStore from '../store/store.js';
@@ -23,7 +20,9 @@ function ShoppingItem(props) {
 	const setItemBought = useStore((state) => state.setItemBought);
 	const deleteShoppingItem = useStore((state) => state.deleteShoppingItem);
 	const addShoppingItemQuantity = useStore((state) => state.addShoppingItemQuantity);
+	const changeItemName = useStore((state) => state.changeItemName);
 	const [menuAnchor, setMenuAnchor] = useState(null);
+	const [isBeingEdited, setIsBeingEdited] = useState(false);
 	const [item, setItem] = useState(null);
 
 	useEffect(() => {
@@ -48,6 +47,17 @@ function ShoppingItem(props) {
 		return item.bought ? className + ' ' + className + '-bought' : className;
 	};
 
+	const setNewName = (newName) => {
+		setIsBeingEdited(false);
+		changeItemName(item.itemId, newName);
+	};
+
+	const onEnterNewName = (e) => {
+		if (e.keyCode == 13) {
+			setNewName(e.target.value);
+		}
+	};
+
 	return (
 		item && (
 			<Card className={getClass('item-card')} sx={{ backgroundColor: 'background.paper' }}>
@@ -58,7 +68,13 @@ function ShoppingItem(props) {
 					{taskIcon(item.bought)}
 				</IconButton>
 				<Box>
-					<Typography variant="h6"> {item.name}</Typography>
+					{isBeingEdited ? (
+						<Input fullWidth defaultValue={item.name} onKeyDown={onEnterNewName} onBlur={(e) => setNewName(e.target.value)} />
+					) : (
+						<Typography onClick={() => setIsBeingEdited(true)} variant="h6">
+							{item.name}
+						</Typography>
+					)}
 					{item.qty !== 1 && (
 						<Typography color="secondary" variant="subtitle2">
 							{item.qty} items

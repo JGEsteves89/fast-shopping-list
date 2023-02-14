@@ -35,7 +35,6 @@ const useStore = create((set, get) => ({
 	addShoppingItem: (itemName) => {
 		console.log('Trying to add new item', itemName);
 		if (itemName) {
-			// check if the item exists on the current items list
 			const newItemsList = [...get().itemsList];
 			let foundItem = newItemsList.find((i) => i.searchable === normalizeString(itemName));
 			if (!foundItem) {
@@ -51,6 +50,20 @@ const useStore = create((set, get) => ({
 				newShoppingList.push({ id: uuid(), itemId: foundItem.id, qty: 1, bought: false, name: foundItem.name });
 				set((state) => ({ shoppingList: newShoppingList, itemsList: newItemsList }));
 			}
+		}
+	},
+	changeItemName: (id, itemName) => {
+		if (itemName) {
+			const newItemsList = [...get().itemsList];
+			const foundItem = newItemsList.find((i) => i.id === id);
+			console.log('Store => Changing name of', foundItem.name, 'to', itemName);
+			foundItem.name = itemName;
+			foundItem.searchable = normalizeString(itemName);
+
+			const newShoppingList = [...get().shoppingList];
+			newShoppingList.find((i) => i.itemId === id).name = itemName;
+
+			set((state) => ({ shoppingList: newShoppingList, itemsList: newItemsList }));
 		}
 	},
 	setItemBought: (id, bought) => {
