@@ -12,8 +12,8 @@
 -   [x] -   Remove shopping item
 -   [x] -   Add shopping item and quantity view
 -   [x] -   Edit shopping item (reuse add shopping view)
--   [ ] -   Design structure data to retrieve information from the server
--   [ ] -   Design CRUD server action for shopping item
+-   [x] -   Design structure data to retrieve information from the server
+-   [x] -   Design CRUD server action for shopping item
 -   [ ] -   Add shopping history
 -   [ ] -   Design CRUD server action for shopping history
 -   [ ] -   Add shopping item to list

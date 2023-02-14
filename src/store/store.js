@@ -2,36 +2,9 @@ import { create } from 'zustand';
 import { normalizeString } from '../utils/utils.js';
 import uuid from 'react-uuid';
 
-const uuid1 = uuid();
-const uuid2 = uuid();
-const uuid3 = uuid();
-const allItems = [
-	{ id: uuid1, name: 'Bananas' },
-	{ id: uuid2, name: 'Queijo' },
-	{ id: uuid3, name: 'Batatas' },
-	{ id: uuid(), name: 'Chourição' },
-	{ id: uuid(), name: 'Chouriço' },
-	{ id: uuid(), name: 'Arroz' },
-	{ id: uuid(), name: 'Feijão' },
-	{ id: uuid(), name: 'Farinha de trigo' },
-	{ id: uuid(), name: 'Manteiga' },
-	{ id: uuid(), name: 'Chá' },
-	{ id: uuid(), name: 'Carne' },
-	{ id: uuid(), name: 'Ovos' },
-].map((i) => {
-	return { ...i, ...{ searchable: normalizeString(i.name) } };
-});
-const shoppingList = [
-	{ id: uuid(), qty: 1, itemId: uuid1, bought: true },
-	{ id: uuid(), qty: 2, itemId: uuid2, bought: false },
-	{ id: uuid(), qty: 3, itemId: uuid3, bought: false },
-].map((i) => {
-	return { ...i, ...{ name: allItems.find((ii) => ii.id === i.itemId).name } };
-});
-
 const useStore = create((set, get) => ({
-	itemsList: allItems,
-	shoppingList: shoppingList,
+	itemsList: [],
+	shoppingList: [],
 	addShoppingItem: (itemName) => {
 		console.log('Trying to add new item', itemName);
 		if (itemName) {
@@ -49,6 +22,7 @@ const useStore = create((set, get) => ({
 				console.log('Store => Add item to shopping list ' + foundItem.name);
 				newShoppingList.push({ id: uuid(), itemId: foundItem.id, qty: 1, bought: false, name: foundItem.name });
 				set((state) => ({ shoppingList: newShoppingList, itemsList: newItemsList }));
+				get().save();
 			}
 		}
 	},
@@ -64,6 +38,7 @@ const useStore = create((set, get) => ({
 			newShoppingList.find((i) => i.itemId === id).name = itemName;
 
 			set((state) => ({ shoppingList: newShoppingList, itemsList: newItemsList }));
+			get().save();
 		}
 	},
 	setItemBought: (id, bought) => {
@@ -73,6 +48,7 @@ const useStore = create((set, get) => ({
 			console.log('Store => State of item ' + shoppingItem.name + ' bought changed to ', bought);
 			shoppingItem.bought = bought;
 			set((state) => ({ shoppingList: newShoppingList }));
+			get().save();
 		}
 	},
 	addShoppingItemQuantity: (id, qty) => {
@@ -82,15 +58,37 @@ const useStore = create((set, get) => ({
 			console.log('Store => State of item ' + shoppingItem.name + ' qty changed to ', shoppingItem.qty + qty);
 			shoppingItem.qty += qty;
 			set((state) => ({ shoppingList: newShoppingList }));
+			get().save();
 		}
 	},
 	deleteShoppingItem: (id) => {
+		if (!get().loaded) return;
 		console.log('Store => Delete item ' + id);
 		const newShoppingList = [...get().shoppingList].filter((i) => i.id !== id);
 		set((state) => ({ shoppingList: newShoppingList }));
+		get().save();
 	},
-
-	increasePopulation: () => set((state) => ({ bears: state.bears + 1 })),
-	removeAllBears: () => set({ bears: 0 }),
+	fetch: async () => {
+		const response = await fetch('http://localhost:3210/api/data');
+		const data = await response.json();
+		const itemsList = data.itemsList.map((i) => {
+			return { ...i, ...{ searchable: normalizeString(i.name) } };
+		});
+		const shoppingList = data.shoppingList.map((i) => {
+			return { ...i, ...{ name: itemsList.find((ii) => ii.id === i.itemId).name } };
+		});
+		set((state) => ({ itemsList, shoppingList }));
+		get().save();
+	},
+	save: async () => {
+		const data = get();
+		await fetch('http://localhost:3210/api/data', {
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			method: 'POST',
+			body: JSON.stringify(data),
+		}).then(() => console.log('Store => data saved'));
+	},
 }));
 export default useStore;

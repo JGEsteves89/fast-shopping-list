@@ -17,9 +17,7 @@ function NewItemBottomSheet(props) {
 
 	useEffect(() => {
 		console.log('Use effect from new item');
-		if (searchValue) {
-			setShoppingItems(fuzzySort(allShoppingItems, searchValue, (i) => i.searchable));
-		}
+		setShoppingItems(fuzzySort(allShoppingItems, searchValue, (i) => i.searchable));
 	}, [searchValue, allShoppingItems]);
 
 	const selectOrAddItem = (itemName) => {
