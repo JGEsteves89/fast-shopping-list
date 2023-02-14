@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
@@ -15,13 +15,21 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useTheme } from '@mui/material/styles';
 
+import useStore from '../store/store.js';
+
 import './shoppingItem.css';
 
 function ShoppingItem(props) {
-	const emitOnChange = props.onChange;
-	const emitOnItemDelete = props.onItemDelete;
+	const setItemBought = useStore((state) => state.setItemBought);
+	const deleteShoppingItem = useStore((state) => state.deleteShoppingItem);
+	const addShoppingItemQuantity = useStore((state) => state.addShoppingItemQuantity);
 	const [menuAnchor, setMenuAnchor] = useState(null);
-	const [item, setItem] = useState(props.item);
+	const [item, setItem] = useState(null);
+
+	useEffect(() => {
+		console.log('Use effect from props item', props.item.name);
+		setItem(props.item);
+	}, [props.item]);
 
 	const theme = useTheme();
 
@@ -39,77 +47,64 @@ function ShoppingItem(props) {
 	const getClass = (className) => {
 		return item.bought ? className + ' ' + className + '-bought' : className;
 	};
-	const toggleItemBought = () => {
-		const cpyItem = { ...item };
-		cpyItem.bought = !cpyItem.bought;
-		setItem(cpyItem);
-		emitOnChange(cpyItem);
-	};
-	const deleteItem = () => {
-		emitOnItemDelete(item);
-		handleClose();
-	};
-	const addQuantity = (qty) => {
-		console.log(item.name, qty);
-		const cpyItem = { ...item };
-		if (cpyItem.qty + qty !== 0) {
-			cpyItem.qty += qty;
-			setItem(cpyItem);
-			emitOnChange(cpyItem);
-		}
-	};
-	return (
-		<Card className={getClass('item-card')} sx={{ backgroundColor: 'background.paper' }}>
-			<IconButton onClick={toggleItemBought} aria-label="bought" sx={{ color: theme.palette.text.primary, mr: 1 }}>
-				{taskIcon(item.bought)}
-			</IconButton>
-			<Box>
-				<Typography variant="h6"> {item.name}</Typography>
-				{item.qty !== 1 && (
-					<Typography color="secondary" variant="subtitle2">
-						{item.qty} items
-					</Typography>
-				)}
-			</Box>
 
-			<IconButton onClick={handleMenuClick} size="large" edge="end" aria-label="menu" color="secondary" sx={{ mr: 2 }}>
-				<MenuIcon />
-			</IconButton>
-			<Menu
-				id="basic-menu"
-				anchorEl={menuAnchor}
-				open={open}
-				TransitionComponent={Grow}
-				TransitionProps={{
-					direction: 'left',
-					timeout: 500,
-					easing: {
-						enter: 'cubic-bezier(1,0,.7,.81)',
-						exit: 'cubic-bezier(1,0,.7,.81)',
-					},
-				}}
-				anchorOrigin={{
-					vertical: 'top',
-					horizontal: 'right',
-				}}
-				transformOrigin={{
-					vertical: 'center',
-					horizontal: 'right',
-				}}>
-				<MenuItem onClick={() => addQuantity(1)}>
-					<AddIcon fontSize="small" />
-				</MenuItem>
-				<MenuItem onClick={() => addQuantity(-1)}>
-					<RemoveIcon fontSize="small" />
-				</MenuItem>
-				<MenuItem onClick={deleteItem}>
-					<DeleteOutlineIcon fontSize="small" />
-				</MenuItem>
-				<MenuItem onClick={handleClose}>
-					<ArrowForwardIcon fontSize="small" />
-				</MenuItem>
-			</Menu>
-		</Card>
+	return (
+		item && (
+			<Card className={getClass('item-card')} sx={{ backgroundColor: 'background.paper' }}>
+				<IconButton
+					onClick={() => setItemBought(item.id, !item.bought)}
+					aria-label="bought"
+					sx={{ color: theme.palette.text.primary, mr: 1 }}>
+					{taskIcon(item.bought)}
+				</IconButton>
+				<Box>
+					<Typography variant="h6"> {item.name}</Typography>
+					{item.qty !== 1 && (
+						<Typography color="secondary" variant="subtitle2">
+							{item.qty} items
+						</Typography>
+					)}
+				</Box>
+
+				<IconButton onClick={handleMenuClick} size="large" edge="end" aria-label="menu" color="secondary" sx={{ mr: 2 }}>
+					<MenuIcon />
+				</IconButton>
+				<Menu
+					id="basic-menu"
+					anchorEl={menuAnchor}
+					open={open}
+					TransitionComponent={Grow}
+					TransitionProps={{
+						direction: 'left',
+						timeout: 500,
+						easing: {
+							enter: 'cubic-bezier(1,0,.7,.81)',
+							exit: 'cubic-bezier(1,0,.7,.81)',
+						},
+					}}
+					anchorOrigin={{
+						vertical: 'top',
+						horizontal: 'right',
+					}}
+					transformOrigin={{
+						vertical: 'center',
+						horizontal: 'right',
+					}}>
+					<MenuItem onClick={() => addShoppingItemQuantity(item.id, 1)}>
+						<AddIcon fontSize="small" />
+					</MenuItem>
+					<MenuItem onClick={() => addShoppingItemQuantity(item.id, -1)}>
+						<RemoveIcon fontSize="small" />
+					</MenuItem>
+					<MenuItem onClick={() => deleteShoppingItem(item.id)}>
+						<DeleteOutlineIcon fontSize="small" />
+					</MenuItem>
+					<MenuItem onClick={handleClose}>
+						<ArrowForwardIcon fontSize="small" />
+					</MenuItem>
+				</Menu>
+			</Card>
+		)
 	);
 }
 

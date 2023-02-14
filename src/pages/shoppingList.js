@@ -20,24 +20,24 @@ function ShoppingList() {
 		const sorted = [...list].sort(defaultSorter);
 		setShippingListItems(sorted);
 	};
-	const onItemChange = (item) => {
-		console.log('The item', item.name, 'was changed');
-		let cpyList = [...shoppingListItems];
-		const changedInd = cpyList.findIndex((i) => i.id === item.id);
-		cpyList[changedInd] = item;
-		cpyList = cpyList.sort(defaultSorter);
-		setSortedShoppingListItems(cpyList);
-	};
-	const onItemDelete = (item) => {
-		console.log('The item', item.name, 'was deleted');
-		let cpyList = [...shoppingListItems];
-		setSortedShoppingListItems(cpyList.filter((i) => i.id !== item.id).sort(defaultSorter));
-	};
+	// const onItemChange = (item) => {
+	// 	console.log('The item', item.name, 'was changed');
+	// 	let cpyList = [...shoppingListItems];
+	// 	const changedInd = cpyList.findIndex((i) => i.id === item.id);
+	// 	cpyList[changedInd] = item;
+	// 	cpyList = cpyList.sort(defaultSorter);
+	// 	setSortedShoppingListItems(cpyList);
+	// };
+	// const onItemDelete = (item) => {
+	// 	console.log('The item', item.name, 'was deleted');
+	// 	let cpyList = [...shoppingListItems];
+	// 	setSortedShoppingListItems(cpyList.filter((i) => i.id !== item.id).sort(defaultSorter));
+	// };
 
 	return (
 		<Box className="shopping-list-container">
 			{shoppingListItems.map((item) => (
-				<ShoppingItem key={item.id} onChange={onItemChange} onItemDelete={onItemDelete} item={{ ...item }} />
+				<ShoppingItem key={item.id} item={{ ...item }} />
 			))}
 		</Box>
 	);
