@@ -23,15 +23,23 @@ function NewItemBottomSheet(props) {
 	}, [searchValue, allShoppingItems]);
 
 	const selectOrAddItem = (itemName) => {
+		setSearchValue('');
 		setShow(false);
 		addShoppingItem(itemName);
 	};
 
+	const onEnterNewName = (e) => {
+		if (e.keyCode === 13) {
+			selectOrAddItem(e.target.value);
+		}
+	};
 	return (
 		<BottomSheet show={show} setShow={setShow}>
 			<div className="search">
 				<InputBase
+					autoFocus
 					value={searchValue}
+					onKeyDown={onEnterNewName}
 					onChange={(e) => setSearchValue(e.target.value)}
 					sx={{ ml: 1, flex: 1 }}
 					placeholder="Search"

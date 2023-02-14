@@ -53,7 +53,7 @@ function ShoppingItem(props) {
 	};
 
 	const onEnterNewName = (e) => {
-		if (e.keyCode == 13) {
+		if (e.keyCode === 13) {
 			setNewName(e.target.value);
 		}
 	};

@@ -44,7 +44,7 @@ const useStore = create((set, get) => ({
 			}
 
 			const newShoppingList = [...get().shoppingList];
-			const shoppingItem = newShoppingList.find((i) => i.id === foundItem.id);
+			const shoppingItem = newShoppingList.find((i) => i.itemId === foundItem.id);
 			if (!shoppingItem) {
 				console.log('Store => Add item to shopping list ' + foundItem.name);
 				newShoppingList.push({ id: uuid(), itemId: foundItem.id, qty: 1, bought: false, name: foundItem.name });
