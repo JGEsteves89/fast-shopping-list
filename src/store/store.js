@@ -1,10 +1,13 @@
 import { create } from 'zustand';
-import { normalizeString } from '../utils/utils.js';
 import uuid from 'react-uuid';
+
+import { normalizeString } from '../utils/utils.js';
+import MyDate from '../utils/myDate.js';
 
 const useStore = create((set, get) => ({
 	itemsList: [],
 	shoppingList: [],
+	shoppingHistory: [],
 	addShoppingItem: (itemName) => {
 		console.log('Trying to add new item', itemName);
 		if (itemName) {
@@ -41,14 +44,43 @@ const useStore = create((set, get) => ({
 			get().save();
 		}
 	},
+
 	setItemBought: (id, bought) => {
 		const newShoppingList = [...get().shoppingList];
 		const shoppingItem = newShoppingList.find((i) => i.id === id);
 		if (shoppingItem && shoppingItem.bought !== bought) {
 			console.log('Store => State of item ' + shoppingItem.name + ' bought changed to ', bought);
 			shoppingItem.bought = bought;
+			if (bought) {
+				get().addShoppingHistory(shoppingItem.id, shoppingItem.qty);
+			} else {
+				get().removeShoppingHistory(shoppingItem.id);
+			}
 			set((state) => ({ shoppingList: newShoppingList }));
 			get().save();
+		}
+	},
+	addShoppingHistory: (itemId, qty) => {
+		const newShoppingHistory = [...get().shoppingHistory];
+		const today = new MyDate();
+
+		const alreadyIn = newShoppingHistory.find((i) => i.itemId === itemId && i.date === today.toString());
+		if (!alreadyIn) {
+			console.log('Store => Adding history of shopping', itemId);
+			newShoppingHistory.push({ itemId, qty, date: today.toString() });
+			set((state) => ({ shoppingHistory: newShoppingHistory }));
+			// saved will be done on setItemBought
+		}
+	},
+	removeShoppingHistory: (itemId) => {
+		const newShoppingHistory = [...get().shoppingHistory];
+		const today = new MyDate();
+
+		const alreadyIn = newShoppingHistory.find((i) => i.itemId === itemId && i.date === today.toString());
+		if (alreadyIn) {
+			console.log('Store => Removing history of shopping', itemId);
+			set((state) => ({ shoppingHistory: newShoppingHistory.filter((i) => i.itemId !== itemId || i.date !== today.toString()) }));
+			// saved will be done on setItemBought
 		}
 	},
 	addShoppingItemQuantity: (id, qty) => {
@@ -77,7 +109,8 @@ const useStore = create((set, get) => ({
 		const shoppingList = data.shoppingList.map((i) => {
 			return { ...i, ...{ name: itemsList.find((ii) => ii.id === i.itemId).name } };
 		});
-		set((state) => ({ itemsList, shoppingList }));
+		const shoppingHistory = data.shoppingHistory || [];
+		set((state) => ({ itemsList, shoppingList, shoppingHistory }));
 		get().save();
 	},
 	save: async () => {

@@ -71,7 +71,7 @@ function ShoppingItem(props) {
 					{isBeingEdited ? (
 						<Input fullWidth defaultValue={item.name} onKeyDown={onEnterNewName} onBlur={(e) => setNewName(e.target.value)} />
 					) : (
-						<Typography onClick={() => setIsBeingEdited(true)} variant="h6">
+						<Typography onClick={() => setIsBeingEdited(true)} variant="subtitle1">
 							{item.name}
 						</Typography>
 					)}

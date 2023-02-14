@@ -18,10 +18,11 @@
 .MuiMenu-list {
 	display: flex;
 	flex-direction: row;
+	padding-block: 0.1rem !important;
 }
 .MuiMenuItem-root {
 	padding-inline: 0.6rem !important;
 }
 #basic-menu {
-	transform: translate(20px, 23px);
+	transform: translate(6%, 2.5%);
 }
