@@ -11,3 +11,17 @@
 	align-items: center;
 	justify-items: center;
 }
+#add-button-icon {
+	background-color: #22416c;
+	border-radius: 50%;
+	font-size: 60px;
+	padding: 0.5rem;
+	color: #74b9c2 !important;
+	transform: translate(0, -10px);
+}
+.MuiBottomNavigationAction-root {
+	color: rgba(173, 202, 203, 0.58) !important;
+}
+.MuiBottomNavigationAction-root.Mui-selected {
+	color: #74b9c2 !important;
+}

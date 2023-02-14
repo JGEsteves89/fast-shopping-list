@@ -10,6 +10,10 @@ function ShoppingList() {
 			{ id: 2, qty: 2, name: 'queijo', bought: false },
 			{ id: 3, qty: 3, name: 'batatas', bought: false },
 			{ id: 4, qty: 1, name: 'chouriço', bought: false },
+			{ id: 5, qty: 1, name: 'chouriço 1', bought: false },
+			{ id: 6, qty: 1, name: 'chouriço 2', bought: false },
+			{ id: 7, qty: 1, name: 'chouriço 3', bought: false },
+			{ id: 8, qty: 1, name: 'chouriço 4', bought: false },
 		].sort(defaultSorter)
 	);
 

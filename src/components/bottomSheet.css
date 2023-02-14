@@ -1,0 +1,17 @@
+.bottom-sheet {
+	position: fixed;
+	bottom: 0;
+	left: 1rem;
+	right: 1rem;
+	padding: 1rem;
+	min-height: 80vh;
+}
+.close-button-fab {
+	background: transparent;
+	justify-self: right;
+}
+.sheet-header {
+	display: flex;
+	align-items: start;
+	justify-content: right;
+}
