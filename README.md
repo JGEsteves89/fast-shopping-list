@@ -14,11 +14,11 @@
 -   [x] -   Edit shopping item (reuse add shopping view)
 -   [x] -   Design structure data to retrieve information from the server
 -   [x] -   Design CRUD server action for shopping item
--   [ ] -   Add shopping history
--   [ ] -   Design CRUD server action for shopping history
--   [ ] -   Add shopping item to list
--   [ ] -   Provide suggestion when adding shopping list
--   [ ] -   Provide suggestion when adding shopping list based on the shopping history
+-   [x] -   Add shopping history
+-   [x] -   Design CRUD server action for shopping history
+-   [x] -   Add shopping item to list
+-   [x] -   Provide suggestion when adding shopping list
+-   [x] -   Provide suggestion when adding shopping list based on the shopping history
 -   [ ] -   Design structure data for trend view
 -   [ ] -   Modify add and shopping history to effect on trend view
 -   [ ] -   Shopping trend view

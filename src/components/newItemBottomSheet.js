@@ -8,6 +8,14 @@ import { fuzzySort } from '../utils/utils.js';
 
 import './newItemBottomSheet.css';
 
+const shoppingTrendAndHistorySort = (list, searchValue) => {
+	if (searchValue) {
+		return fuzzySort(list, searchValue, (i) => i.searchable);
+	} else {
+		return list.sort((a, b) => a.stock - b.stock);
+	}
+};
+
 function NewItemBottomSheet(props) {
 	const addShoppingItem = useStore((state) => state.addShoppingItem);
 	const allShoppingItems = useStore((state) => state.itemsList);
@@ -17,7 +25,7 @@ function NewItemBottomSheet(props) {
 
 	useEffect(() => {
 		console.log('Use effect from new item');
-		setShoppingItems(fuzzySort(allShoppingItems, searchValue, (i) => i.searchable));
+		setShoppingItems(shoppingTrendAndHistorySort(allShoppingItems, searchValue));
 	}, [searchValue, allShoppingItems]);
 
 	const selectOrAddItem = (itemName) => {
@@ -59,6 +67,7 @@ function NewItemBottomSheet(props) {
 					{shoppingItems.map((item) => (
 						<ListItem key={item.id} className="list-item" onClick={() => selectOrAddItem(item.name)}>
 							<ListItemText primary={item.name} />
+							{item.stock !== 0 && <ListItemText secondary={'Estimated stock: ' + item.stock.toFixed(0)} />}
 						</ListItem>
 					))}
 				</List>

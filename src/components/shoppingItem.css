@@ -1,6 +1,6 @@
 .item-card {
 	display: grid;
-	grid-template-columns: 40px auto 40px;
+	grid-template-columns: 23px 40px auto 40px;
 	align-items: center;
 	max-width: 30rem;
 	min-height: 3rem;
@@ -25,4 +25,20 @@
 }
 #basic-menu {
 	transform: translate(6%, 2.5%);
+}
+.add-remove-buttons {
+	display: flex;
+	flex-direction: column;
+	min-height: 100%;
+	padding: 0 !important;
+	margin: 0 !important;
+	margin-right: 0.3rem !important;
+}
+.add-remove-button {
+	margin: 1px !important;
+	min-height: 100%;
+	min-width: 100%;
+	background-color: #0000000f !important;
+	border-radius: 5px !important;
+	font-size: small !important;
 }

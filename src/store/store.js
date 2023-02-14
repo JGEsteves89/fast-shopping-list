@@ -4,6 +4,13 @@ import uuid from 'react-uuid';
 import { normalizeString } from '../utils/utils.js';
 import MyDate from '../utils/myDate.js';
 
+const newListItem = (name, id = uuid(), stock = 0, order = 0) => {
+	return { id, name, searchable: normalizeString(name), stock, order };
+};
+const newShoppingItem = (itemId, name, id = uuid(), qty = 1, bought = false) => {
+	return { id, itemId, qty, bought, name };
+};
+
 const useStore = create((set, get) => ({
 	itemsList: [],
 	shoppingList: [],
@@ -14,7 +21,7 @@ const useStore = create((set, get) => ({
 			const newItemsList = [...get().itemsList];
 			let foundItem = newItemsList.find((i) => i.searchable === normalizeString(itemName));
 			if (!foundItem) {
-				foundItem = { id: uuid(), name: itemName, searchable: normalizeString(itemName) };
+				foundItem = newListItem(itemName);
 				console.log('Store => Created a new item ' + foundItem.name);
 				newItemsList.push(foundItem);
 			}
@@ -23,7 +30,8 @@ const useStore = create((set, get) => ({
 			const shoppingItem = newShoppingList.find((i) => i.itemId === foundItem.id);
 			if (!shoppingItem) {
 				console.log('Store => Add item to shopping list ' + foundItem.name);
-				newShoppingList.push({ id: uuid(), itemId: foundItem.id, qty: 1, bought: false, name: foundItem.name });
+				const newShoppingListItem = newShoppingItem(foundItem.id, foundItem.name);
+				newShoppingList.push(newShoppingListItem);
 				set((state) => ({ shoppingList: newShoppingList, itemsList: newItemsList }));
 				get().save();
 			}
@@ -52,9 +60,9 @@ const useStore = create((set, get) => ({
 			console.log('Store => State of item ' + shoppingItem.name + ' bought changed to ', bought);
 			shoppingItem.bought = bought;
 			if (bought) {
-				get().addShoppingHistory(shoppingItem.id, shoppingItem.qty);
+				get().addShoppingHistory(shoppingItem.itemId, shoppingItem.qty);
 			} else {
-				get().removeShoppingHistory(shoppingItem.id);
+				get().removeShoppingHistory(shoppingItem.itemId);
 			}
 			set((state) => ({ shoppingList: newShoppingList }));
 			get().save();
@@ -94,7 +102,6 @@ const useStore = create((set, get) => ({
 		}
 	},
 	deleteShoppingItem: (id) => {
-		if (!get().loaded) return;
 		console.log('Store => Delete item ' + id);
 		const newShoppingList = [...get().shoppingList].filter((i) => i.id !== id);
 		set((state) => ({ shoppingList: newShoppingList }));
@@ -103,13 +110,7 @@ const useStore = create((set, get) => ({
 	fetch: async () => {
 		const response = await fetch('http://localhost:3210/api/data');
 		const data = await response.json();
-		const itemsList = data.itemsList.map((i) => {
-			return { ...i, ...{ searchable: normalizeString(i.name) } };
-		});
-		const shoppingList = data.shoppingList.map((i) => {
-			return { ...i, ...{ name: itemsList.find((ii) => ii.id === i.itemId).name } };
-		});
-		const shoppingHistory = data.shoppingHistory || [];
+		const { itemsList, shoppingList, shoppingHistory } = prepareAllData(data);
 		set((state) => ({ itemsList, shoppingList, shoppingHistory }));
 		get().save();
 	},
@@ -124,4 +125,43 @@ const useStore = create((set, get) => ({
 		}).then(() => console.log('Store => data saved'));
 	},
 }));
+const prepareAllData = (data) => {
+	const shoppingHistory = data.shoppingHistory || [];
+
+	const itemsList = data.itemsList.map((i) => {
+		const searchable = normalizeString(i.name);
+		const stock = calculateStock(i.id, shoppingHistory);
+
+		return { ...i, ...{ searchable, stock } };
+	});
+	const shoppingList = data.shoppingList.map((i) => {
+		const name = itemsList.find((ii) => ii.id === i.itemId).name;
+		return { ...i, ...{ name } };
+	});
+
+	return { itemsList, shoppingList, shoppingHistory };
+};
+const calculateStock = (id, history) => {
+	const purchases = history
+		.filter((i) => i.itemId === id)
+		.sort((a, b) => MyDate.compareMyDateStr(a.date, b.date))
+		.splice(0, 5);
+	if (purchases.length > 3) {
+		let purchasesPerDay = 0;
+		for (let i = 0; i < purchases.length - 1; i++) {
+			const boughtDate = MyDate.parse(purchases[i].date);
+			const nextBoughtDate = MyDate.parse(purchases[i + 1].date);
+			const days = nextBoughtDate.daysDiff(boughtDate);
+			purchasesPerDay += purchases[i].qty / days;
+		}
+
+		const averagePerDay = purchasesPerDay / (purchases.length - 1);
+		const lastBought = purchases[purchases.length - 1];
+		const daysFromLastBought = new MyDate().daysDiff(MyDate.parse(lastBought.date));
+		const qty = lastBought.qty;
+		const stock = qty - daysFromLastBought * averagePerDay;
+		return stock;
+	}
+	return 0;
+};
 export default useStore;
