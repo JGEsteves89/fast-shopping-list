@@ -16,7 +16,7 @@ import RestoreIcon from '@mui/icons-material/Restore';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 import ShoppingList from '../pages/shoppingList.js';
-import BottomSheet from '../components/bottomSheet.js';
+import NewItemBottomSheet from '../components/newItemBottomSheet.js';
 import './default.css';
 
 function DefaultLayout() {
@@ -43,7 +43,7 @@ function DefaultLayout() {
 			<Box className="app-content">
 				<ShoppingList />
 			</Box>
-			<BottomSheet show={showAddItem} setShow={setShowAddItem}></BottomSheet>
+			<NewItemBottomSheet show={showAddItem} setShow={setShowAddItem} />
 			<Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
 				<BottomNavigation
 					showLabels

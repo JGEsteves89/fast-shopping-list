@@ -24,7 +24,7 @@ const defaultTheme = createTheme({
 	},
 	typography: {
 		h4: {
-			fontSize: '2rem',
+			fontSize: '1.5rem',
 			fontWeight: 600,
 			lineHeight: 1,
 			letterSpacing: '-0.03em',

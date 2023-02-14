@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { alpha, Paper, Fab } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ClickAwayListener from '@mui/base/ClickAwayListener';
@@ -23,7 +22,7 @@ function BottomSheet(props) {
 								<CloseIcon fontSize="small" />
 							</Fab>
 						</div>
-						<h1>HELLO DARKNESS MY OLD FRIEND</h1>
+						{props.children}
 					</Paper>
 				</Slide>
 			</ClickAwayListener>

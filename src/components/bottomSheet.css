@@ -5,13 +5,15 @@
 	right: 1rem;
 	padding: 1rem;
 	min-height: 80vh;
+	max-height: 80vh;
 }
 .close-button-fab {
 	background: transparent;
 	justify-self: right;
+	transform: translate(7px, -7px);
 }
 .sheet-header {
 	display: flex;
-	align-items: start;
+	align-items: flex-start;
 	justify-content: right;
 }
