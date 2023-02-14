@@ -1,38 +1,58 @@
 import { create } from 'zustand';
 import { normalizeString } from '../utils/utils.js';
+import uuid from 'react-uuid';
 
+const uuid1 = uuid();
+const uuid2 = uuid();
+const uuid3 = uuid();
 const allItems = [
-	{ id: 1000, name: 'Bananas' },
-	{ id: 2, name: 'Queijo' },
-	{ id: 3, name: 'Batatas' },
-	{ id: 4, name: 'Chourição' },
-	{ id: 5, name: 'Chouriço' },
-	{ id: 6, name: 'Arroz' },
-	{ id: 7, name: 'Feijão' },
-	{ id: 8, name: 'Farinha de trigo' },
-	{ id: 10, name: 'Manteiga' },
-	{ id: 11, name: 'Chá' },
-	{ id: 12, name: 'Carne' },
-	{ id: 13, name: 'Ovos' },
+	{ id: uuid1, name: 'Bananas' },
+	{ id: uuid2, name: 'Queijo' },
+	{ id: uuid3, name: 'Batatas' },
+	{ id: uuid(), name: 'Chourição' },
+	{ id: uuid(), name: 'Chouriço' },
+	{ id: uuid(), name: 'Arroz' },
+	{ id: uuid(), name: 'Feijão' },
+	{ id: uuid(), name: 'Farinha de trigo' },
+	{ id: uuid(), name: 'Manteiga' },
+	{ id: uuid(), name: 'Chá' },
+	{ id: uuid(), name: 'Carne' },
+	{ id: uuid(), name: 'Ovos' },
 ].map((i) => {
 	return { ...i, ...{ searchable: normalizeString(i.name) } };
 });
 const shoppingList = [
-	{ id: 1000, qty: 1001, bought: false },
-	{ id: 2, qty: 2, bought: false },
-	{ id: 3, qty: 3, bought: false },
-	{ id: 4, qty: 1, bought: false },
-	{ id: 5, qty: 1, bought: false },
-	{ id: 6, qty: 1, bought: false },
-	{ id: 7, qty: 1, bought: false },
-	{ id: 8, qty: 1, bought: false },
+	{ id: uuid(), qty: 1, itemId: uuid1, bought: true },
+	{ id: uuid(), qty: 2, itemId: uuid2, bought: false },
+	{ id: uuid(), qty: 3, itemId: uuid3, bought: false },
 ].map((i) => {
-	return { ...i, ...{ name: allItems.find((ii) => ii.id === i.id).name } };
+	return { ...i, ...{ name: allItems.find((ii) => ii.id === i.itemId).name } };
 });
 
 const useStore = create((set, get) => ({
 	itemsList: allItems,
 	shoppingList: shoppingList,
+	addShoppingItem: (itemName) => {
+		console.log('Trying to add new item', itemName);
+		if (itemName) {
+			// check if the item exists on the current items list
+			const newItemsList = [...get().itemsList];
+			let foundItem = newItemsList.find((i) => i.searchable === normalizeString(itemName));
+			if (!foundItem) {
+				foundItem = { id: uuid(), name: itemName, searchable: normalizeString(itemName) };
+				console.log('Store => Created a new item ' + foundItem.name);
+				newItemsList.push(foundItem);
+			}
+
+			const newShoppingList = [...get().shoppingList];
+			const shoppingItem = newShoppingList.find((i) => i.id === foundItem.id);
+			if (!shoppingItem) {
+				console.log('Store => Add item to shopping list ' + foundItem.name);
+				newShoppingList.push({ id: uuid(), itemId: foundItem.id, qty: 1, bought: false, name: foundItem.name });
+				set((state) => ({ shoppingList: newShoppingList, itemsList: newItemsList }));
+			}
+		}
+	},
 	setItemBought: (id, bought) => {
 		const newShoppingList = [...get().shoppingList];
 		const shoppingItem = newShoppingList.find((i) => i.id === id);

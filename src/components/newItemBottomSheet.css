@@ -8,6 +8,7 @@
 	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 	border-radius: 0.5rem;
 	margin-block: 0.2rem;
+	cursor: pointer;
 }
 .list-item:hover {
 	background-color: rgba(255, 255, 255, 0.05);

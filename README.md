@@ -10,7 +10,7 @@
 -   [x] -   Show list of shopping items
 -   [x] -   Increase quantity of shopping item
 -   [x] -   Remove shopping item
--   [ ] -   Add shopping item and quantity view
+-   [x] -   Add shopping item and quantity view
 -   [ ] -   Edit shopping item (reuse add shopping view)
 -   [ ] -   Design structure data to retrieve information from the server
 -   [ ] -   Design CRUD server action for shopping item
