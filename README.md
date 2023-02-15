@@ -25,4 +25,4 @@
 -   [x] -   Migrate server
 -   [x] -   Hide server configuration
 -   [x] -   Add loading state queue
--   [ ] -   Publish in github
+-   [x] -   Publish in github
