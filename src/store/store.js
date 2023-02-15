@@ -4,11 +4,40 @@ import uuid from 'react-uuid';
 import { normalizeString } from '../utils/utils.js';
 import MyDate from '../utils/myDate.js';
 
-const newListItem = (name, id = uuid(), stock = 0, order = 0) => {
+const newListItem = (name, id = uuid(), stock = 0, order = 1000000) => {
 	return { id, name, searchable: normalizeString(name), stock, order };
 };
-const newShoppingItem = (itemId, name, id = uuid(), qty = 1, bought = false) => {
-	return { id, itemId, qty, bought, name };
+const newShoppingItem = (itemId, name, order, id = uuid(), qty = 1, bought = false) => {
+	return { id, itemId, qty, bought, name, order };
+};
+
+const swapInFront = (list, beforeInd, afterInd) => {
+	const before = list.splice(beforeInd, 1);
+	list.splice(afterInd, 0, before[0]);
+};
+const setShoppingListOrder = (itemId, shoppingList, itemsList) => {
+	const beforeIds = shoppingList.filter((i) => !i.bought && i.itemId !== itemId).map((i) => i.itemId);
+	const afterIds = shoppingList.filter((i) => i.bought && i.itemId !== itemId).map((i) => i.itemId);
+
+	const sortedList = itemsList.sort((a, b) => a.order - b.order);
+	let curInd = sortedList.findIndex((i) => i.id === itemId);
+	for (const beforeId of beforeIds) {
+		const beforeInd = sortedList.findIndex((i) => i.id === beforeId);
+		if (beforeInd <= curInd) {
+			swapInFront(sortedList, curInd, beforeInd);
+			curInd = beforeInd;
+		}
+	}
+	for (const afterId of afterIds) {
+		const afterInd = sortedList.findIndex((i) => i.id === afterId);
+		if (curInd <= afterInd) {
+			swapInFront(sortedList, afterInd, curInd);
+		}
+	}
+	for (let i = 0; i < sortedList.length; i++) {
+		sortedList[i].order = i;
+	}
+	return sortedList;
 };
 
 const useStore = create((set, get) => ({
@@ -30,7 +59,7 @@ const useStore = create((set, get) => ({
 			const shoppingItem = newShoppingList.find((i) => i.itemId === foundItem.id);
 			if (!shoppingItem) {
 				console.log('Store => Add item to shopping list ' + foundItem.name);
-				const newShoppingListItem = newShoppingItem(foundItem.id, foundItem.name);
+				const newShoppingListItem = newShoppingItem(foundItem.id, foundItem.name, foundItem.order);
 				newShoppingList.push(newShoppingListItem);
 				set((state) => ({ shoppingList: newShoppingList, itemsList: newItemsList }));
 				get().save();
@@ -52,19 +81,23 @@ const useStore = create((set, get) => ({
 			get().save();
 		}
 	},
-
 	setItemBought: (id, bought) => {
-		const newShoppingList = [...get().shoppingList];
+		let newShoppingList = [...get().shoppingList];
 		const shoppingItem = newShoppingList.find((i) => i.id === id);
 		if (shoppingItem && shoppingItem.bought !== bought) {
 			console.log('Store => State of item ' + shoppingItem.name + ' bought changed to ', bought);
 			shoppingItem.bought = bought;
 			if (bought) {
+				let newItemsList = [...get().itemsList];
+				newItemsList = setShoppingListOrder(shoppingItem.itemId, newShoppingList, newItemsList);
+				newShoppingList = prepareShoppingList(newShoppingList, newItemsList);
 				get().addShoppingHistory(shoppingItem.itemId, shoppingItem.qty);
+				set((state) => ({ shoppingList: newShoppingList, itemsList: newItemsList }));
 			} else {
 				get().removeShoppingHistory(shoppingItem.itemId);
+				set((state) => ({ shoppingList: newShoppingList }));
 			}
-			set((state) => ({ shoppingList: newShoppingList }));
+
 			get().save();
 		}
 	},
@@ -125,22 +158,34 @@ const useStore = create((set, get) => ({
 		}).then(() => console.log('Store => data saved'));
 	},
 }));
-const prepareAllData = (data) => {
-	const shoppingHistory = data.shoppingHistory || [];
 
-	const itemsList = data.itemsList.map((i) => {
+const prepareShoppingList = (shoppingList, itemsList) => {
+	return shoppingList.map((i) => {
+		const item = itemsList.find((ii) => ii.id === i.itemId);
+		const name = item.name;
+		const order = item.order;
+		return { ...i, ...{ name, order } };
+	});
+};
+
+const prepareItemsListList = (itemsList, shoppingHistory) => {
+	return itemsList.map((i) => {
 		const searchable = normalizeString(i.name);
 		const stock = calculateStock(i.id, shoppingHistory);
 
 		return { ...i, ...{ searchable, stock } };
 	});
-	const shoppingList = data.shoppingList.map((i) => {
-		const name = itemsList.find((ii) => ii.id === i.itemId).name;
-		return { ...i, ...{ name } };
-	});
+};
+
+const prepareAllData = (data) => {
+	const shoppingHistory = data.shoppingHistory || [];
+
+	const itemsList = prepareItemsListList(data.itemsList, shoppingHistory);
+	const shoppingList = prepareShoppingList(data.shoppingList, itemsList);
 
 	return { itemsList, shoppingList, shoppingHistory };
 };
+
 const calculateStock = (id, history) => {
 	const purchases = history
 		.filter((i) => i.itemId === id)

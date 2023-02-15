@@ -29,6 +29,9 @@ const defaultTheme = createTheme({
 			lineHeight: 1,
 			letterSpacing: '-0.03em',
 		},
+		subtitle1: {
+			fontSize: '1.2rem',
+		},
 	},
 });
 export default defaultTheme;
