@@ -22,6 +22,7 @@
 -   [x] -   Automatically order items based on the order of being bought
 -   [x] -   Remove verbose debug
 -   [x] -   Allow to add several items like: cheese ham potatoes
--   [ ] -   Migrate server
--   [ ] -   Hide server configuration
+-   [x] -   Migrate server
+-   [x] -   Hide server configuration
+-   [x] -   Add loading state queue
 -   [ ] -   Publish in github

@@ -42,6 +42,7 @@ const setShoppingListOrder = (itemId, shoppingList, itemsList) => {
 };
 
 const useStore = create((set, get) => ({
+	loading: true,
 	itemsList: [],
 	shoppingList: [],
 	shoppingHistory: [],
@@ -162,13 +163,14 @@ const useStore = create((set, get) => ({
 		get().save();
 	},
 	fetch: async () => {
-		const data = await api.get();
+		const data = await api.getData();
 		const { itemsList, shoppingList, shoppingHistory } = prepareAllData(data);
-		set((state) => ({ itemsList, shoppingList, shoppingHistory }));
+		set((state) => ({ itemsList, shoppingList, shoppingHistory, loading: false }));
 	},
 	save: async () => {
 		const data = get();
-		return api.post(data);
+		const { itemsList, shoppingList, shoppingHistory } = data;
+		return api.postData({ itemsList, shoppingList, shoppingHistory });
 	},
 }));
 
@@ -193,8 +195,8 @@ const prepareItemsListList = (itemsList, shoppingHistory) => {
 const prepareAllData = (data) => {
 	const shoppingHistory = data.shoppingHistory || [];
 
-	const itemsList = prepareItemsListList(data.itemsList, shoppingHistory);
-	const shoppingList = prepareShoppingList(data.shoppingList, itemsList);
+	const itemsList = prepareItemsListList(data.itemsList || [], shoppingHistory);
+	const shoppingList = prepareShoppingList(data.shoppingList || [], itemsList);
 
 	return { itemsList, shoppingList, shoppingHistory };
 };

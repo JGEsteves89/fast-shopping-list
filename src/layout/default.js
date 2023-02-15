@@ -1,25 +1,31 @@
 import React from 'react';
-import CssBaseline from '@mui/material/CssBaseline';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Grid from '@mui/material/Grid';
+import {
+	CssBaseline,
+	Box,
+	Paper,
+	AppBar,
+	Toolbar,
+	Grid,
+	IconButton,
+	alpha,
+	Typography,
+	BottomNavigation,
+	BottomNavigationAction,
+	CircularProgress,
+} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
-import { useTheme } from '@mui/material/styles';
-import { alpha, Typography } from '@mui/material';
-import BottomNavigation from '@mui/material/BottomNavigation';
-import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import RestoreIcon from '@mui/icons-material/Restore';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import { useTheme } from '@mui/material/styles';
 
 import ShoppingList from '../pages/shoppingList.js';
 import NewItemBottomSheet from '../components/newItemBottomSheet.js';
+import useStore from '../store/store.js';
 import './default.css';
 
 function DefaultLayout() {
+	const loading = useStore((state) => state.loading);
 	const theme = useTheme();
 	const [currentPage, setCurrentPage] = React.useState(0);
 	const [showAddItem, setShowAddItem] = React.useState(false);
@@ -40,9 +46,7 @@ function DefaultLayout() {
 					</Grid>
 				</Toolbar>
 			</AppBar>
-			<Box className="app-content">
-				<ShoppingList />
-			</Box>
+			<Box className="app-content">{loading ? <CircularProgress color="secondary" /> : <ShoppingList />}</Box>
 			<NewItemBottomSheet show={showAddItem} setShow={setShowAddItem} />
 			<Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
 				<BottomNavigation
