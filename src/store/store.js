@@ -45,20 +45,20 @@ const useStore = create((set, get) => ({
 	shoppingList: [],
 	shoppingHistory: [],
 	addShoppingItem: (itemName) => {
-		console.log('Trying to add new item', itemName);
+		//console.log('Trying to add new item', itemName);
 		if (itemName) {
 			const newItemsList = [...get().itemsList];
 			let foundItem = newItemsList.find((i) => i.searchable === normalizeString(itemName));
 			if (!foundItem) {
 				foundItem = newListItem(itemName);
-				console.log('Store => Created a new item ' + foundItem.name);
+				//console.log('Store => Created a new item ' + foundItem.name);
 				newItemsList.push(foundItem);
 			}
 
 			const newShoppingList = [...get().shoppingList];
 			const shoppingItem = newShoppingList.find((i) => i.itemId === foundItem.id);
 			if (!shoppingItem) {
-				console.log('Store => Add item to shopping list ' + foundItem.name);
+				//console.log('Store => Add item to shopping list ' + foundItem.name);
 				const newShoppingListItem = newShoppingItem(foundItem.id, foundItem.name, foundItem.order);
 				newShoppingList.push(newShoppingListItem);
 				set((state) => ({ shoppingList: newShoppingList, itemsList: newItemsList }));
@@ -70,7 +70,7 @@ const useStore = create((set, get) => ({
 		if (itemName) {
 			const newItemsList = [...get().itemsList];
 			const foundItem = newItemsList.find((i) => i.id === id);
-			console.log('Store => Changing name of', foundItem.name, 'to', itemName);
+			//console.log('Store => Changing name of', foundItem.name, 'to', itemName);
 			foundItem.name = itemName;
 			foundItem.searchable = normalizeString(itemName);
 
@@ -85,7 +85,7 @@ const useStore = create((set, get) => ({
 		let newShoppingList = [...get().shoppingList];
 		const shoppingItem = newShoppingList.find((i) => i.id === id);
 		if (shoppingItem && shoppingItem.bought !== bought) {
-			console.log('Store => State of item ' + shoppingItem.name + ' bought changed to ', bought);
+			//console.log('Store => State of item ' + shoppingItem.name + ' bought changed to ', bought);
 			shoppingItem.bought = bought;
 			if (bought) {
 				let newItemsList = [...get().itemsList];
@@ -107,7 +107,7 @@ const useStore = create((set, get) => ({
 
 		const alreadyIn = newShoppingHistory.find((i) => i.itemId === itemId && i.date === today.toString());
 		if (!alreadyIn) {
-			console.log('Store => Adding history of shopping', itemId);
+			//console.log('Store => Adding history of shopping', itemId);
 			newShoppingHistory.push({ itemId, qty, date: today.toString() });
 			set((state) => ({ shoppingHistory: newShoppingHistory }));
 			// saved will be done on setItemBought
@@ -119,7 +119,7 @@ const useStore = create((set, get) => ({
 
 		const alreadyIn = newShoppingHistory.find((i) => i.itemId === itemId && i.date === today.toString());
 		if (alreadyIn) {
-			console.log('Store => Removing history of shopping', itemId);
+			//console.log('Store => Removing history of shopping', itemId);
 			set((state) => ({ shoppingHistory: newShoppingHistory.filter((i) => i.itemId !== itemId || i.date !== today.toString()) }));
 			// saved will be done on setItemBought
 		}
@@ -128,14 +128,14 @@ const useStore = create((set, get) => ({
 		const newShoppingList = [...get().shoppingList];
 		const shoppingItem = newShoppingList.find((i) => i.id === id);
 		if (shoppingItem && shoppingItem.qty + qty !== 0) {
-			console.log('Store => State of item ' + shoppingItem.name + ' qty changed to ', shoppingItem.qty + qty);
+			//console.log('Store => State of item ' + shoppingItem.name + ' qty changed to ', shoppingItem.qty + qty);
 			shoppingItem.qty += qty;
 			set((state) => ({ shoppingList: newShoppingList }));
 			get().save();
 		}
 	},
 	deleteShoppingItem: (id) => {
-		console.log('Store => Delete item ' + id);
+		//console.log('Store => Delete item ' + id);
 		const newShoppingList = [...get().shoppingList].filter((i) => i.id !== id);
 		set((state) => ({ shoppingList: newShoppingList }));
 		get().save();
@@ -155,7 +155,7 @@ const useStore = create((set, get) => ({
 			},
 			method: 'POST',
 			body: JSON.stringify(data),
-		}).then(() => console.log('Store => data saved'));
+		});
 	},
 }));
 

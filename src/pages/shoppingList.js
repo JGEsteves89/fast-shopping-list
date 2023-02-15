@@ -13,7 +13,7 @@ function ShoppingList() {
 	const [shoppingListItems, setShippingListItems] = useState([]);
 
 	useEffect(() => {
-		console.log('Use effect from shopping list');
+		//console.log('Use effect from shopping list');
 		setSortedShoppingListItems(shoppingItems);
 	}, [shoppingItems]);
 

@@ -24,7 +24,7 @@ function NewItemBottomSheet(props) {
 	const [searchValue, setSearchValue] = useState('');
 
 	useEffect(() => {
-		console.log('Use effect from new item');
+		//console.log('Use effect from new item');
 		setShoppingItems(shoppingTrendAndHistorySort(allShoppingItems, searchValue));
 	}, [searchValue, allShoppingItems]);
 

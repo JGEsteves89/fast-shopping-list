@@ -23,7 +23,7 @@ function ShoppingItem(props) {
 	const [item, setItem] = useState(null);
 
 	useEffect(() => {
-		console.log('Use effect from props item', props.item.name);
+		//console.log('Use effect from props item', props.item.name);
 		setItem(props.item);
 	}, [props.item]);
 
