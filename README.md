@@ -21,7 +21,7 @@
 -   [x] -   Provide suggestion when adding shopping list based on the shopping history
 -   [x] -   Automatically order items based on the order of being bought
 -   [x] -   Remove verbose debug
--   [ ] -   Allow to add several items like: cheese ham potatoes
+-   [x] -   Allow to add several items like: cheese ham potatoes
 -   [ ] -   Migrate server
 -   [ ] -   Hide server configuration
 -   [ ] -   Publish in github

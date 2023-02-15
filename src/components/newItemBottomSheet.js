@@ -17,7 +17,7 @@ const shoppingTrendAndHistorySort = (list, searchValue) => {
 };
 
 function NewItemBottomSheet(props) {
-	const addShoppingItem = useStore((state) => state.addShoppingItem);
+	const addSeveralShoppingItem = useStore((state) => state.addSeveralShoppingItem);
 	const allShoppingItems = useStore((state) => state.itemsList);
 	const [show, setShow] = [props.show, props.setShow];
 	const [shoppingItems, setShoppingItems] = useState(allShoppingItems);
@@ -28,10 +28,10 @@ function NewItemBottomSheet(props) {
 		setShoppingItems(shoppingTrendAndHistorySort(allShoppingItems, searchValue));
 	}, [searchValue, allShoppingItems]);
 
-	const selectOrAddItem = (itemName) => {
+	const selectOrAddItem = (itemsNames) => {
 		setSearchValue('');
 		setShow(false);
-		addShoppingItem(itemName);
+		addSeveralShoppingItem(itemsNames);
 	};
 
 	const onEnterNewName = (e) => {

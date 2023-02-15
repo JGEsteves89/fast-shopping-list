@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import uuid from 'react-uuid';
 
+import api from '../api/firebase.js';
 import { normalizeString } from '../utils/utils.js';
 import MyDate from '../utils/myDate.js';
 
@@ -66,6 +67,26 @@ const useStore = create((set, get) => ({
 			}
 		}
 	},
+	addSeveralShoppingItem: (itemNames) => {
+		const separators = ['e', 'and'];
+		let separator = '';
+		for (const sep of separators) {
+			if (itemNames.includes(' ' + sep + ' ')) {
+				separator = ' ' + sep + ' ';
+				break;
+			}
+		}
+		if (separator) {
+			for (const itemName of itemNames.split(separator)) {
+				console.log('Adding', itemName);
+				get().addShoppingItem(itemName);
+			}
+		} else {
+			console.log('Adding', itemNames);
+			get().addShoppingItem(itemNames);
+		}
+	},
+
 	changeItemName: (id, itemName) => {
 		if (itemName) {
 			const newItemsList = [...get().itemsList];
@@ -141,21 +162,13 @@ const useStore = create((set, get) => ({
 		get().save();
 	},
 	fetch: async () => {
-		const response = await fetch('http://localhost:3210/api/data');
-		const data = await response.json();
+		const data = await api.get();
 		const { itemsList, shoppingList, shoppingHistory } = prepareAllData(data);
 		set((state) => ({ itemsList, shoppingList, shoppingHistory }));
-		get().save();
 	},
 	save: async () => {
 		const data = get();
-		await fetch('http://localhost:3210/api/data', {
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			method: 'POST',
-			body: JSON.stringify(data),
-		});
+		return api.post(data);
 	},
 }));
 
