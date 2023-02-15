@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 import { IconButton, Typography, Box, Card, Input } from '@mui/material';
 
@@ -7,6 +7,8 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import TaskAltSharpIcon from '@mui/icons-material/TaskAltSharp';
 import PanoramaFishEyeSharpIcon from '@mui/icons-material/PanoramaFishEyeSharp';
+import EditIcon from '@mui/icons-material/Edit';
+import ClickAwayListener from '@mui/base/ClickAwayListener';
 
 import { useTheme } from '@mui/material/styles';
 
@@ -21,6 +23,7 @@ function ShoppingItem(props) {
 	const changeItemName = useStore((state) => state.changeItemName);
 	const [isBeingEdited, setIsBeingEdited] = useState(false);
 	const [item, setItem] = useState(null);
+	const inputRef = useRef(null);
 
 	useEffect(() => {
 		//console.log('Use effect from props item', props.item.name);
@@ -38,7 +41,9 @@ function ShoppingItem(props) {
 
 	const setNewName = (newName) => {
 		setIsBeingEdited(false);
-		changeItemName(item.itemId, newName);
+		if (newName !== item.name) {
+			changeItemName(item.itemId, newName);
+		}
 	};
 
 	const onEnterNewName = (e) => {
@@ -49,40 +54,50 @@ function ShoppingItem(props) {
 
 	return (
 		item && (
-			<Card className={getClass('item-card')} sx={{ backgroundColor: 'background.paper' }}>
-				<IconButton
-					onClick={() => setItemBought(item.id, !item.bought)}
-					aria-label="bought"
-					sx={{ color: theme.palette.text.primary, mr: 1 }}>
-					{taskIcon(item.bought)}
-				</IconButton>
-				<Box className="add-remove-buttons">
-					<IconButton className="add-remove-button" color="secondary" onClick={() => addShoppingItemQuantity(item.id, 1)}>
-						<AddIcon fontSize="34" />
+			<ClickAwayListener onClickAway={() => isBeingEdited && setNewName(inputRef.current.firstChild.value)}>
+				<Card className={getClass('item-card')} sx={{ backgroundColor: 'background.paper' }}>
+					<IconButton
+						onClick={() => setItemBought(item.id, !item.bought)}
+						aria-label="bought"
+						sx={{ color: theme.palette.text.primary, mr: 1 }}>
+						{taskIcon(item.bought)}
 					</IconButton>
-					<IconButton className="add-remove-button" color="secondary" onClick={() => addShoppingItemQuantity(item.id, -1)}>
-						<RemoveIcon fontSize="34" />
-					</IconButton>
-				</Box>
-				<Box>
-					{isBeingEdited ? (
-						<Input fullWidth defaultValue={item.name} onKeyDown={onEnterNewName} onBlur={(e) => setNewName(e.target.value)} />
-					) : (
-						<Typography onClick={() => setIsBeingEdited(true)} variant="subtitle1">
-							{item.name}
-						</Typography>
-					)}
-					{item.qty !== 1 && (
-						<Typography color="secondary" variant="subtitle2">
-							{item.qty} items
-						</Typography>
-					)}
-				</Box>
 
-				<IconButton size="large" edge="end" aria-label="menu" color="secondary" sx={{ mr: 2 }} onClick={() => deleteShoppingItem(item.id)}>
-					<DeleteOutlineIcon />
-				</IconButton>
-			</Card>
+					<Box sx={{ mx: 1, mt: 0.4 }} onClick={() => !isBeingEdited && setItemBought(item.id, !item.bought)}>
+						{isBeingEdited ? (
+							<Input
+								ref={inputRef}
+								fullWidth
+								defaultValue={item.name}
+								onKeyDown={onEnterNewName}
+								onBlur={(e) => setNewName(e.target.value)}
+							/>
+						) : (
+							<Typography variant="subtitle1">{item.name}</Typography>
+						)}
+						{item.qty !== 1 && (
+							<Typography color="secondary" variant="subtitle2">
+								{item.qty} items
+							</Typography>
+						)}
+					</Box>
+
+					<Box className="add-remove-buttons">
+						<IconButton className="add-remove-button" color="secondary" onClick={() => addShoppingItemQuantity(item.id, 1)}>
+							<AddIcon fontSize="34" />
+						</IconButton>
+						<IconButton className="add-remove-button" color="secondary" onClick={() => addShoppingItemQuantity(item.id, -1)}>
+							<RemoveIcon fontSize="34" />
+						</IconButton>
+					</Box>
+					<IconButton size="large" edge="end" aria-label="menu" color="secondary" onClick={() => setIsBeingEdited(true)}>
+						<EditIcon />
+					</IconButton>
+					<IconButton size="large" edge="end" aria-label="menu" color="secondary" onClick={() => deleteShoppingItem(item.id)}>
+						<DeleteOutlineIcon />
+					</IconButton>
+				</Card>
+			</ClickAwayListener>
 		)
 	);
 }

@@ -26,3 +26,4 @@
 -   [x] -   Hide server configuration
 -   [x] -   Add loading state queue
 -   [x] -   Publish in github
+-   [x] -   Improve mark item as bought and edit options

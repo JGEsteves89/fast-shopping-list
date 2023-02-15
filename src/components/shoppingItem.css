@@ -1,6 +1,6 @@
 .item-card {
 	display: grid;
-	grid-template-columns: 23px 40px auto 40px;
+	grid-template-columns: 20px auto 50px 30px 30px;
 	align-items: center;
 	max-width: 30rem;
 	min-height: 3rem;
@@ -29,6 +29,7 @@
 .add-remove-buttons {
 	display: flex;
 	flex-direction: column;
+	justify-content: center;
 	min-height: 100%;
 	padding: 0 !important;
 	margin: 0 !important;
