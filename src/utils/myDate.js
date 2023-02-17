@@ -28,4 +28,7 @@ MyDate.compareMyDateStr = (a, b) => {
 MyDate.compareMyDate = (a, b) => {
 	return MyDate.compareMyDateStr(a.toString(), b.toString());
 };
+MyDate.daysStrDiff = (a, b) => {
+	return MyDate.parse(a).daysDiff(MyDate.parse(b));
+};
 export default MyDate;

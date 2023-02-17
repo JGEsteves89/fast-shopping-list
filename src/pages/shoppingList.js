@@ -32,9 +32,11 @@ function ShoppingList() {
 				maxHeight: '82vh',
 				'& ul': { padding: 0 },
 			}}>
-			{shoppingListItems.map((item) => (
-				<ShoppingItem key={item.id} item={{ ...item }} />
-			))}
+			{shoppingListItems.length === 0 ? (
+				<h3>No items on the shopping list</h3>
+			) : (
+				shoppingListItems.map((item) => <ShoppingItem key={item.id} item={{ ...item }} />)
+			)}
 		</Box>
 	);
 }

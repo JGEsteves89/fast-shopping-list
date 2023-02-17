@@ -27,6 +27,7 @@ const api = {
 		return get(child(dbRef, `api`))
 			.then((snapshot) => {
 				if (snapshot.exists()) {
+					console.log('Got', snapshot.val());
 					return snapshot.val();
 				} else {
 					console.error('No data available on the server');
@@ -39,6 +40,7 @@ const api = {
 			});
 	},
 	postData: (data) => {
+		console.log('Data will be saved');
 		logEvent(analytics, 'POST_DATA_EVENT');
 		return set(ref(database, 'api'), data);
 	},

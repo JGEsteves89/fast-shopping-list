@@ -15,14 +15,23 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AddIcon from '@mui/icons-material/Add';
-import RestoreIcon from '@mui/icons-material/Restore';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
+import ShoppingBasketOutlinedIcon from '@mui/icons-material/ShoppingBasketOutlined';
+import TrendingUpOutlinedIcon from '@mui/icons-material/TrendingUpOutlined';
 import { useTheme } from '@mui/material/styles';
 
 import ShoppingList from '../pages/shoppingList.js';
+import ShoppingTrend from '../pages/shoppingTrend.js';
 import NewItemBottomSheet from '../components/newItemBottomSheet.js';
 import useStore from '../store/store.js';
 import './default.css';
+
+function getCurrentPage(currentPage) {
+	console.log('Current page', currentPage);
+	if (currentPage === 2) {
+		return <ShoppingTrend />;
+	}
+	return <ShoppingList />;
+}
 
 function DefaultLayout() {
 	const loading = useStore((state) => state.loading);
@@ -46,18 +55,13 @@ function DefaultLayout() {
 					</Grid>
 				</Toolbar>
 			</AppBar>
-			<Box className="app-content">{loading ? <CircularProgress color="secondary" /> : <ShoppingList />}</Box>
+			<Box className="app-content">{loading ? <CircularProgress color="secondary" /> : getCurrentPage(currentPage)}</Box>
 			<NewItemBottomSheet show={showAddItem} setShow={setShowAddItem} />
 			<Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
-				<BottomNavigation
-					showLabels
-					value={currentPage}
-					onChange={(event, newCurrentPage) => {
-						setCurrentPage(newCurrentPage);
-					}}>
-					<BottomNavigationAction label="List" icon={<RestoreIcon />} />
+				<BottomNavigation showLabels value={currentPage} onChange={(event, newCurrentPage) => setCurrentPage(newCurrentPage)}>
+					<BottomNavigationAction label="List" icon={<ShoppingBasketOutlinedIcon />} />
 					<BottomNavigationAction onClick={() => setShowAddItem(!showAddItem)} id="add-button" icon={<AddIcon id="add-button-icon" />} />
-					<BottomNavigationAction label="Settings" icon={<LocationOnIcon />} />
+					<BottomNavigationAction label="Settings" icon={<TrendingUpOutlinedIcon />} />
 				</BottomNavigation>
 			</Paper>
 		</Box>

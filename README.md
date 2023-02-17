@@ -27,3 +27,9 @@
 -   [x] -   Add loading state queue
 -   [x] -   Publish in github
 -   [x] -   Improve mark item as bought and edit options
+-   [x] -   Create a new view and the specific router
+-   [x] -   Create a view with the shopping trends and stock
+-   [x] -   Change view icons
+-   [ ] -   Check bug where bought items are not stored
+-   [ ] -   Add a clear list button
+-   [ ] -   Update hamburger menu with the possible views.
