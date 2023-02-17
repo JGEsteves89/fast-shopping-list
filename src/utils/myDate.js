@@ -14,6 +14,11 @@ class MyDate {
 		const diff = this.toDate().getTime() - other.toDate().getTime();
 		return Math.ceil(diff / (1000 * 3600 * 24));
 	}
+	addDays(days) {
+		const date = this.toDate();
+		date.setDate(date.getDate() + days);
+		return new MyDate(date);
+	}
 }
 
 MyDate.parse = (str) => {

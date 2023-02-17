@@ -69,12 +69,12 @@ const useStore = create((set, get) => ({
 		}
 	},
 	addSeveralShoppingItem: (itemNames) => {
-		const separators = ['e', 'and'];
+		const separators = [' e ', ' and ', ', '];
 		let separator = '';
 		for (const sep of separators) {
-			if (itemNames.includes(' ' + sep + ' ')) {
-				separator = ' ' + sep + ' ';
-				break;
+			if (itemNames.includes(sep)) {
+				separator = ';';
+				itemNames = itemNames.replaceAll(sep, separator);
 			}
 		}
 		if (separator) {

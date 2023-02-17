@@ -33,13 +33,16 @@ function ShoppingTrend() {
 				}
 				return { qty: purchase.qty, days: MyDate.daysStrDiff(nextPurchaseDate, purchase.date) };
 			});
-			const averagePerWeek = (
-				purchasesPerDay.length < 2 ? 0 : purchasesPerDay.reduce((prev, cur) => (prev += cur.qty / cur.days), 0) * 7
-			).toFixed(1);
+			const totalDays = (purchasesPerDay.length < 2 ? 0 : purchasesPerDay.reduce((prev, cur) => (prev += cur.days), 0)) + 1;
+			const totalPurchases = purchasesPerDay.length < 2 ? 0 : purchasesPerDay.reduce((prev, cur) => (prev += cur.qty), 0);
+			const averagePerWeek = (totalPurchases / totalDays) * 7;
 			const lastBought = purchases.length !== 0 ? purchasesPerDay[purchasesPerDay.length - 1] : { qty: 0, days: 0 };
-			const estimatedStock = (lastBought.qty - (averagePerWeek / 7) * lastBought.days).toFixed(1);
+			const estimatedStock = lastBought.qty - (averagePerWeek / 7) * lastBought.days;
 
-			newShoppingTrend.push({ ...item, ...{ averagePerWeek, boughtInTheLastWeek, estimatedStock } });
+			newShoppingTrend.push({
+				...item,
+				...{ averagePerWeek: averagePerWeek.toFixed(1), boughtInTheLastWeek, estimatedStock: estimatedStock.toFixed(1) },
+			});
 		}
 		setShoppingTrend(newShoppingTrend);
 	}, [itemsList, shoppingHistory]);

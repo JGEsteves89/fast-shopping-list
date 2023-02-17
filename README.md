@@ -30,6 +30,6 @@
 -   [x] -   Create a new view and the specific router
 -   [x] -   Create a view with the shopping trends and stock
 -   [x] -   Change view icons
--   [ ] -   Check bug where bought items are not stored
--   [ ] -   Add a clear list button
+-   [x] -   Add a clear list button
 -   [ ] -   Update hamburger menu with the possible views.
+-   [ ] -   Check bug where bought items are not stored

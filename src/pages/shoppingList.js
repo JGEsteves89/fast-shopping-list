@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Box from '@mui/material/Box';
+import { Box, Button } from '@mui/material';
 
 import useStore from '../store/store.js';
 import ShoppingItem from '../components/shoppingItem';
@@ -10,6 +10,7 @@ const sortByItemOrder = (a, b) => a.order - b.order;
 
 function ShoppingList() {
 	const shoppingItems = useStore((state) => state.shoppingList);
+	const deleteShoppingItem = useStore((state) => state.deleteShoppingItem);
 	const [shoppingListItems, setShippingListItems] = useState([]);
 
 	useEffect(() => {
@@ -21,7 +22,11 @@ function ShoppingList() {
 		const sorted = [...list].sort(sortByItemOrder).sort(sortByBought);
 		setShippingListItems(sorted);
 	};
-
+	const clearList = () => {
+		for (const item of shoppingItems) {
+			deleteShoppingItem(item.id);
+		}
+	};
 	return (
 		<Box
 			className="shopping-list-container"
@@ -37,6 +42,9 @@ function ShoppingList() {
 			) : (
 				shoppingListItems.map((item) => <ShoppingItem key={item.id} item={{ ...item }} />)
 			)}
+			<Button onClick={() => clearList()} className="center-button" color="secondary">
+				Clear list
+			</Button>
 		</Box>
 	);
 }
