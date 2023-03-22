@@ -156,6 +156,9 @@ const useStore = create((set, get) => ({
 			get().save();
 		}
 	},
+	getTrendStats: (itemId) => {
+		return calculateTrendStats(itemId, get().shoppingHistory);
+	},
 	deleteShoppingItem: (id) => {
 		//console.log('Store => Delete item ' + id);
 		const newShoppingList = [...get().shoppingList].filter((i) => i.id !== id);
@@ -186,7 +189,7 @@ const prepareShoppingList = (shoppingList, itemsList) => {
 const prepareItemsListList = (itemsList, shoppingHistory) => {
 	return itemsList.map((i) => {
 		const searchable = normalizeString(i.name);
-		const stock = calculateStock(i.id, shoppingHistory);
+		const stock = calculateTrendStats(i.id, shoppingHistory).expectedStock;
 
 		return { ...i, ...{ searchable, stock } };
 	});
@@ -200,28 +203,23 @@ const prepareAllData = (data) => {
 
 	return { itemsList, shoppingList, shoppingHistory };
 };
-
-const calculateStock = (id, history) => {
+const calculateTrendStats = (itemId, history) => {
 	const purchases = history
-		.filter((i) => i.itemId === id)
+		.filter((i) => i.itemId === itemId)
 		.sort((a, b) => MyDate.compareMyDateStr(a.date, b.date))
 		.splice(0, 5);
-	if (purchases.length > 3) {
-		let purchasesPerDay = 0;
-		for (let i = 0; i < purchases.length - 1; i++) {
-			const boughtDate = MyDate.parse(purchases[i].date);
-			const nextBoughtDate = MyDate.parse(purchases[i + 1].date);
-			const days = nextBoughtDate.daysDiff(boughtDate);
-			purchasesPerDay += purchases[i].qty / days;
-		}
-
-		const averagePerDay = purchasesPerDay / (purchases.length - 1);
-		const lastBought = purchases[purchases.length - 1];
-		const daysFromLastBought = new MyDate().daysDiff(MyDate.parse(lastBought.date));
-		const qty = lastBought.qty;
-		const stock = qty - daysFromLastBought * averagePerDay;
-		return stock;
+	if (purchases.length < 2) {
+		//console.log(itemName, 'Item bougth only', purchases.length, 'time');
+		return { avgWeek: 0, expectedStock: 0 };
 	}
-	return 0;
+	const totalAmountOfDays = new MyDate().daysDiff(MyDate.parse(purchases[0].date));
+	const totalAmountBougth = purchases.reduce((prev, cur) => (prev += cur.qty), 0);
+	const avgWeek = totalAmountOfDays > 0 ? (totalAmountBougth / totalAmountOfDays) * 7 : 0;
+	const lastPurchase = purchases[purchases.length - 1];
+	const lastQtyPurchase = lastPurchase.qty;
+	const lastPurchaseDaysAgo = new MyDate().daysDiff(MyDate.parse(lastPurchase.date));
+	const expectedStock = lastQtyPurchase - lastPurchaseDaysAgo * (avgWeek / 7);
+	return { avgWeek, expectedStock };
 };
+
 export default useStore;

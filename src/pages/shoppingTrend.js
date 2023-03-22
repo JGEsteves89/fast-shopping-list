@@ -6,42 +6,45 @@ import useStore from '../store/store.js';
 import './shoppingTrend.css';
 
 const columns = [
-	{ field: 'name', headerName: 'Name', type: 'string', flex: 1, minWidth: 150, sortable: true, editable: false },
-	{ field: 'averagePerWeek', headerName: 'Avg', type: 'number', width: 45, sortable: true, editable: false },
-	{ field: 'boughtInTheLastWeek', headerName: 'Qtd', type: 'number', width: 45, sortable: true, editable: false },
-	{ field: 'estimatedStock', headerName: 'Stock', type: 'number', width: 45, sortable: true, editable: false },
+	{ field: 'name', headerName: 'Name', type: 'string', flex: 1, minWidth: 120, sortable: true, editable: false },
+	{ field: 'averagePerWeek', headerName: 'Avg', type: 'number', width: 65, sortable: true, editable: false },
+	{ field: 'estimatedStock', headerName: 'Stock', type: 'number', width: 65, sortable: true, editable: false },
 ];
 
 function ShoppingTrend() {
 	const itemsList = useStore((state) => state.itemsList);
 	const shoppingHistory = useStore((state) => state.shoppingHistory);
+	const getTrendStats = useStore((state) => state.getTrendStats);
 	const [shoppingTrend, setShoppingTrend] = useState([]);
 
 	useEffect(() => {
 		let newShoppingTrend = [];
 		for (const item of itemsList) {
-			const purchases = shoppingHistory
-				.filter((i) => i.itemId === item.id)
-				.sort((a, b) => MyDate.compareMyDateStr(a.date, b.date))
-				.splice(0, 5);
+			// if (item.name === 'Queijo') {
+			const { avgWeek, expectedStock } = getTrendStats(item.id);
+			// }
+			// const purchases = shoppingHistory
+			// 	.filter((i) => i.itemId === item.id)
+			// 	.sort((a, b) => MyDate.compareMyDateStr(a.date, b.date))
+			// 	.splice(0, 5);
 
-			let boughtInTheLastWeek = 0;
-			const purchasesPerDay = purchases.map((purchase, i) => {
-				const nextPurchaseDate = purchase[i + 1] ? purchase[i + 1].date : new MyDate().toString();
-				if (MyDate.daysStrDiff(new MyDate().toString(), purchase.date) <= 7) {
-					boughtInTheLastWeek += purchase.qty;
-				}
-				return { qty: purchase.qty, days: MyDate.daysStrDiff(nextPurchaseDate, purchase.date) };
-			});
-			const totalDays = (purchasesPerDay.length < 2 ? 0 : purchasesPerDay.reduce((prev, cur) => (prev += cur.days), 0)) + 1;
-			const totalPurchases = purchasesPerDay.length < 2 ? 0 : purchasesPerDay.reduce((prev, cur) => (prev += cur.qty), 0);
-			const averagePerWeek = (totalPurchases / totalDays) * 7;
-			const lastBought = purchases.length !== 0 ? purchasesPerDay[purchasesPerDay.length - 1] : { qty: 0, days: 0 };
-			const estimatedStock = lastBought.qty - (averagePerWeek / 7) * lastBought.days;
+			// let boughtInTheLastWeek = 0;
+			// const purchasesPerDay = purchases.map((purchase, i) => {
+			// 	const nextPurchaseDate = purchase[i + 1] ? purchase[i + 1].date : new MyDate().toString();
+			// 	if (MyDate.daysStrDiff(new MyDate().toString(), purchase.date) <= 7) {
+			// 		boughtInTheLastWeek += purchase.qty;
+			// 	}
+			// 	return { qty: purchase.qty, days: MyDate.daysStrDiff(nextPurchaseDate, purchase.date) };
+			// });
+			// const totalDays = (purchasesPerDay.length < 2 ? 0 : purchasesPerDay.reduce((prev, cur) => (prev += cur.days), 0)) + 1;
+			// const totalPurchases = purchasesPerDay.length < 2 ? 0 : purchasesPerDay.reduce((prev, cur) => (prev += cur.qty), 0);
+			// const averagePerWeek = (totalPurchases / totalDays) * 7;
+			// const lastBought = purchases.length !== 0 ? purchasesPerDay[purchasesPerDay.length - 1] : { qty: 0, days: 0 };
+			// const estimatedStock = lastBought.qty - (averagePerWeek / 7) * lastBought.days;
 
 			newShoppingTrend.push({
 				...item,
-				...{ averagePerWeek: averagePerWeek.toFixed(1), boughtInTheLastWeek, estimatedStock: estimatedStock.toFixed(1) },
+				...{ averagePerWeek: avgWeek.toFixed(1), estimatedStock: expectedStock.toFixed(1) },
 			});
 		}
 		setShoppingTrend(newShoppingTrend);
@@ -55,12 +58,24 @@ function ShoppingTrend() {
 				position: 'relative',
 				overflow: 'auto',
 				maxHeight: '82vh',
-				height: '90vh',
+				height: '85vh',
+				padding: '1rem',
 				margin: '1rem',
 				'& ul': { padding: 0 },
 			}}>
 			<span className="side-note">Average and quantity are relative to the last 7 days.</span>
-			<DataGrid rows={shoppingTrend} columns={columns} autoPageSize rowsPerPageOptions={[5]} experimentalFeatures={{ newEditingApi: false }} />
+			<DataGrid
+				initialState={{
+					sorting: {
+						sortModel: [{ field: 'estimatedStock', sort: 'asc' }],
+					},
+				}}
+				rows={shoppingTrend}
+				columns={columns}
+				autoPageSize
+				rowsPerPageOptions={[5]}
+				experimentalFeatures={{ newEditingApi: false }}
+			/>
 		</Box>
 	);
 }
