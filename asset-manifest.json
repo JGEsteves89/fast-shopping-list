@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/fast-shopping-list/static/css/main.ded64b52.css",
-    "main.js": "/fast-shopping-list/static/js/main.581b9611.js",
+    "main.js": "/fast-shopping-list/static/js/main.e12df584.js",
     "static/js/787.13154e00.chunk.js": "/fast-shopping-list/static/js/787.13154e00.chunk.js",
     "index.html": "/fast-shopping-list/index.html",
     "main.ded64b52.css.map": "/fast-shopping-list/static/css/main.ded64b52.css.map",
-    "main.581b9611.js.map": "/fast-shopping-list/static/js/main.581b9611.js.map",
+    "main.e12df584.js.map": "/fast-shopping-list/static/js/main.e12df584.js.map",
     "787.13154e00.chunk.js.map": "/fast-shopping-list/static/js/787.13154e00.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.ded64b52.css",
-    "static/js/main.581b9611.js"
+    "static/js/main.e12df584.js"
   ]
 }
