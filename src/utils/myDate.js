@@ -28,7 +28,7 @@ MyDate.parse = (str) => {
 	return new MyDate(new Date(year, month - 1, day));
 };
 MyDate.compareMyDateStr = (a, b) => {
-	return a.localeCompare(b);
+	return b.localeCompare(a);
 };
 MyDate.compareMyDate = (a, b) => {
 	return MyDate.compareMyDateStr(a.toString(), b.toString());

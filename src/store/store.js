@@ -157,7 +157,7 @@ const useStore = create((set, get) => ({
 		}
 	},
 	getTrendStats: (itemId) => {
-		return calculateTrendStats(itemId, get().shoppingHistory);
+		return calculateTrendStats(itemId, get().shoppingHistory, get().itemsList);
 	},
 	deleteShoppingItem: (id) => {
 		//console.log('Store => Delete item ' + id);
@@ -168,6 +168,10 @@ const useStore = create((set, get) => ({
 	fetch: async () => {
 		const data = await api.getData();
 		const { itemsList, shoppingList, shoppingHistory } = prepareAllData(data);
+		// for (const hit of shoppingHistory) {
+		// 	const foundItem = itemsList.find((i) => i.id === hit.itemId);
+		// 	console.log(foundItem.name, hit.date);
+		// }
 		set((state) => ({ itemsList, shoppingList, shoppingHistory, loading: false }));
 	},
 	save: async () => {
@@ -203,11 +207,13 @@ const prepareAllData = (data) => {
 
 	return { itemsList, shoppingList, shoppingHistory };
 };
-const calculateTrendStats = (itemId, history) => {
+const calculateTrendStats = (itemId, history, itemsList) => {
 	const purchases = history
 		.filter((i) => i.itemId === itemId)
 		.sort((a, b) => MyDate.compareMyDateStr(a.date, b.date))
-		.splice(0, 5);
+		.splice(0, 5)
+		.reverse();
+
 	if (purchases.length < 2) {
 		//console.log(itemName, 'Item bougth only', purchases.length, 'time');
 		return { avgWeek: 0, expectedStock: 0 };
@@ -218,7 +224,9 @@ const calculateTrendStats = (itemId, history) => {
 	const lastPurchase = purchases[purchases.length - 1];
 	const lastQtyPurchase = lastPurchase.qty;
 	const lastPurchaseDaysAgo = new MyDate().daysDiff(MyDate.parse(lastPurchase.date));
-	const expectedStock = lastQtyPurchase - lastPurchaseDaysAgo * (avgWeek / 7);
+	const shouldBeIgnore = lastPurchaseDaysAgo * (1 / avgWeek) > 150;
+	const expectedStock = shouldBeIgnore ? 0 : lastQtyPurchase - lastPurchaseDaysAgo * (avgWeek / 7);
+
 	return { avgWeek, expectedStock };
 };
 
