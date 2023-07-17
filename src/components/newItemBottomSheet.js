@@ -12,7 +12,7 @@ const shoppingTrendAndHistorySort = (list, searchValue) => {
 	if (searchValue) {
 		return fuzzySort(list, searchValue, (i) => i.searchable);
 	} else {
-		return list.sort((a, b) => a.stock - b.stock);
+		return list.sort((a, b) => (!a.stock ? 100 : a.stock) - (!b.stock ? 100 : b.stock));
 	}
 };
 
@@ -67,7 +67,7 @@ function NewItemBottomSheet(props) {
 					{shoppingItems.map((item) => (
 						<ListItem key={item.id} className="list-item" onClick={() => selectOrAddItem(item.name)}>
 							<ListItemText primary={item.name} />
-							{item.stock !== 0 && <ListItemText secondary={'Estimated stock: ' + item.stock.toFixed(0)} />}
+							{item.stock !== null && <ListItemText secondary={'Estimated stock: ' + item.stock.toFixed(1)} />}
 						</ListItem>
 					))}
 				</List>

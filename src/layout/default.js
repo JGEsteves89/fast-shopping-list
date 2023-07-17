@@ -50,7 +50,7 @@ function DefaultLayout() {
 					</Grid>
 					<Grid item sx={{ width: '100%' }}>
 						<Typography sx={{ textAlign: 'center', marginBlock: '0.5rem' }} color="secondary" variant="h4">
-							FAST SHOPPING LIST 1.2
+							FAST SHOPPING LIST 1.3
 						</Typography>
 					</Grid>
 				</Toolbar>

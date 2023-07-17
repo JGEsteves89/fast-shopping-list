@@ -1,21 +1,34 @@
 import { useState, useEffect } from 'react';
-import { Box } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
-import MyDate from '../utils/myDate.js';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Box, IconButton } from '@mui/material';
+
+import AddIcon from '@mui/icons-material/Add';
 import useStore from '../store/store.js';
 import './shoppingTrend.css';
-
-const columns = [
-	{ field: 'name', headerName: 'Name', type: 'string', flex: 1, minWidth: 120, sortable: true, editable: false },
-	{ field: 'averagePerWeek', headerName: 'Avg', type: 'number', width: 65, sortable: true, editable: false },
-	{ field: 'estimatedStock', headerName: 'Stock', type: 'number', width: 65, sortable: true, editable: false },
-];
 
 function ShoppingTrend() {
 	const itemsList = useStore((state) => state.itemsList);
 	const shoppingHistory = useStore((state) => state.shoppingHistory);
 	const getTrendStats = useStore((state) => state.getTrendStats);
+	const addShoppingItem = useStore((state) => state.addShoppingItem);
 	const [shoppingTrend, setShoppingTrend] = useState([]);
+	const [itemsAdded, setItemsAdded] = useState([]);
+	const addItem = (item) => {
+		// Handle button click for the specific row...
+		//console.log(item.name);
+		setItemsAdded([...itemsAdded, item.id]);
+		addShoppingItem(item.name);
+	};
+	const columns = [
+		{ field: 'name', headerName: 'Name', type: 'string', flex: 1, minWidth: 120, sortable: true, editable: false },
+		{ field: 'averagePerWeek', headerName: 'Avg', type: 'number', width: 65, sortable: true, editable: false },
+		{ field: 'estimatedStock', headerName: 'Stock', type: 'number', width: 65, sortable: true, editable: false },
+		{ field: 'order', headerName: 'Order', type: 'number', width: 65, sortable: true, editable: false },
+		{
+			field: 'actions',
+			headerName: 'Add',
+			width: 65,
+		},
+	];
 
 	useEffect(() => {
 		let newShoppingTrend = [];
@@ -44,11 +57,17 @@ function ShoppingTrend() {
 
 			newShoppingTrend.push({
 				...item,
-				...{ averagePerWeek: avgWeek.toFixed(1), estimatedStock: expectedStock.toFixed(1) },
+				...{
+					averagePerWeek: !avgWeek || isNaN(+avgWeek) ? 'n/a' : avgWeek.toFixed(1),
+					estimatedStock: !expectedStock || isNaN(+expectedStock) ? 'n/a' : expectedStock.toFixed(1),
+				},
 			});
 		}
+		newShoppingTrend = newShoppingTrend
+			.sort((a, b) => (a.estimatedStock === 'n/a' ? -1000 : a.estimatedStock) - (b.estimatedStock === 'n/a' ? -1000 : b.estimatedStock))
+			.sort((a, b) => (a.estimatedStock === 'n/a' ? 1 : -1) - (b.estimatedStock === 'n/a' ? 1 : -1));
 		setShoppingTrend(newShoppingTrend);
-	}, [itemsList, shoppingHistory]);
+	}, [itemsList, shoppingHistory, getTrendStats]);
 
 	return (
 		<Box
@@ -64,18 +83,33 @@ function ShoppingTrend() {
 				'& ul': { padding: 0 },
 			}}>
 			<span className="side-note">Average and quantity are relative to the last 7 days.</span>
-			<DataGrid
-				initialState={{
-					sorting: {
-						sortModel: [{ field: 'estimatedStock', sort: 'asc' }],
-					},
-				}}
-				rows={shoppingTrend}
-				columns={columns}
-				autoPageSize
-				rowsPerPageOptions={[5]}
-				experimentalFeatures={{ newEditingApi: false }}
-			/>
+			<TableContainer>
+				<Table>
+					<TableHead sx={{ border: '1px solid white' }}>
+						<TableRow>
+							{columns.map((column) => (
+								<TableCell key={column.field}>{column.headerName}</TableCell>
+							))}
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{shoppingTrend.map((row) => (
+							<TableRow key={row.id}>
+								{columns.map((column) => {
+									if (column.field !== 'actions') return <TableCell key={column.field}>{row[column.field]}</TableCell>;
+									return (
+										<TableCell key={column.field} sx={{ display: 'flex', flexFlow: 'row' }}>
+											<IconButton color="secondary" disabled={itemsAdded.includes(row.id)} onClick={() => addItem(row)}>
+												<AddIcon />
+											</IconButton>
+										</TableCell>
+									);
+								})}
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			</TableContainer>
 		</Box>
 	);
 }
